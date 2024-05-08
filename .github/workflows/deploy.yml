@@ -67,5 +67,27 @@ jobs:
   information:
     runs-on: ubuntu-latest
     steps:
-      - name: Run custom action
+      - name: Get code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Check cache
+        id: "cache"
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-action-deps-${{ hashFiles('.github/actions/deploy-s3-js/package-lock.json') }}
+
+      - name: Install deps
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          cd .github/actions/deploy-s3-js
+          npm ci
+
+      - name: Run log script
         uses: ./.github/actions/deploy-s3-js
