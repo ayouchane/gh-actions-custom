@@ -10,9 +10,12 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
       - name: Install and cache deps
+        id: custom-install
         uses: ./.github/actions/cached-deps
         with:
           caching: "false"
+      - name: Log caching Output
+        run: echo "Cache used? ${{steps.custom-install.outputs.used-cache}}"
       - name: Lint code
         run: npm run lint
   test:
